@@ -32,11 +32,7 @@ export default function Home() {
 
     // Active User
     const [user, setUser] = useState<string>(userParam);
-
-    // Filters
     const [search, setSearch] = useState<string>(searchParam);
-    const [priority, setPriority] = useState<[boolean, boolean, boolean]>([false, false, false]);
-    const [activeTags, setActiveTags] = useState<string[]>([]);
 
     // UI States
     const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
