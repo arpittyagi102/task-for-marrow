@@ -2,23 +2,54 @@ import React, { useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Pencil } from "lucide-react";
 import { USERS, TAGS, PRIORITIES } from "@/constants";
+import { type Todo } from "@/types";
+import { showToast } from "@/lib/toast";
 
-export default function TaskModal({ task, setTask, isOpen, setIsOpen }: TaskModalProps) {
+export default function TaskModal({ task, fetchData, isOpen, setIsOpen }: TaskModalProps) {
     // UI states
     const [isTitleEditing, setIsTitleEditing] = useState(false);
     const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
-    
-    const [title, setTitle] = useState(task.title);
-    const [description, setDescription] = useState(task.description);
-    const [priority, setPriority] = useState(task.priority);
-    const [tags, setTags] = useState(task.tags);
-    const [assignee, setAssignee] = useState(task.assignee);
-    const [dueDate, setDueDate] = useState(task.dueDate);
 
-    const handleSave = () => {
-        console.log({ title, description, priority, tags, dueDate, assignee });
-        setTask({ ...task, title, description, priority, tags, dueDate, assignee });
-        setIsOpen(false);
+    const [title, setTitle] = useState(task.title);
+    const [description, setDescription] = useState(task.description || "");
+    const [priority, setPriority] = useState<"low" | "medium" | "high">(task.priority);
+    const [tags, setTags] = useState<string[]>(task.tags || []);
+    const [assignedUsers, setAssignedUsers] = useState<string[]>(task.assignedUsers || []);
+
+    const handleSave = async () => {
+        const todo = {
+            ...task,
+            title,
+            description,
+            priority,
+            tags,
+            assignedUsers,
+            completed: task.completed || false,
+            notes: task.notes || [],
+            createdAt: task.createdAt || new Date(),
+            updatedAt: new Date(),
+        };
+
+        let url = "/api/todos";
+        let method = "POST";
+
+        if(task._id) {
+            url += `/${task._id}`;
+            method = "PUT";
+        }
+        
+        try {
+            await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(todo),
+            });
+            fetchData();
+            setIsOpen(false);
+            showToast("Task saved successfully", "success");
+        } catch (e) {
+            alert("Failed to save task");
+        }
     };
 
     return (
@@ -27,8 +58,8 @@ export default function TaskModal({ task, setTask, isOpen, setIsOpen }: TaskModa
                 {/* Modal Header */}
                 <div className="Modal-Header flex items-center justify-between mb-4">
                     {isTitleEditing ? (
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             className="text-2xl text-orange-200 font-semibold font-sans bg-transparent border-b border-neutral-50 focus:outline-none"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
@@ -44,13 +75,13 @@ export default function TaskModal({ task, setTask, isOpen, setIsOpen }: TaskModa
                     )}
 
                     <button className="flex gap-2" onClick={() => setIsTitleEditing(prev => !prev)}>
-                        <Pencil className="hover:text-neutral-400 cursor-pointer"/>
+                        <Pencil className="hover:text-neutral-400 cursor-pointer" />
                     </button>
                 </div>
 
                 <div className="Modal-Body flex gap-4 rounded-md">
                     {isDescriptionEditing ? (
-                        <textarea 
+                        <textarea
                             className="w-3/4 text-wrap bg-transparent border-b text-orange-300 focus:outline-none"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
@@ -69,45 +100,42 @@ export default function TaskModal({ task, setTask, isOpen, setIsOpen }: TaskModa
 
                     <div className="border-l w-1/4 pl-4 flex flex-col gap-1">
                         <p className="font-bold text-orange-300">Priority</p>
-                        <Select value={priority} onValueChange={setPriority}>
+                        <Select value={priority} onValueChange={val => setPriority(val as "low" | "medium" | "high")}>
                             <SelectTrigger className="bg-neutral-800 text-neutral-300 text-xs h-6 px-2 mb-4 rounded-md">
                                 <SelectValue placeholder="Priority" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem key={-1} value={-1}>None</SelectItem>
-                                    {PRIORITIES.map((priority, index) => (
-                                        <SelectItem key={index} value={index}>{priority}</SelectItem>
+                                    {PRIORITIES.map((priority) => (
+                                        <SelectItem key={priority} value={priority}>{priority}</SelectItem>
                                     ))}
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
 
-                        <p className="font-bold text-orange-300">Assignee</p>
-                        <Select value={assignee} onValueChange={setAssignee}>
+                        <p className="font-bold text-orange-300">Assignees</p>
+                        <Select multiple value={assignedUsers} onValueChange={setAssignedUsers}>
                             <SelectTrigger className="bg-neutral-800 text-neutral-300 text-xs h-6 px-2 mb-4 rounded-md">
-                                <SelectValue placeholder="Tags" />
+                                <SelectValue placeholder="Assignees" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem key={-1} value={-1}>None</SelectItem>
-                                    {USERS.map((user, index) => (
-                                        <SelectItem key={index} value={index}>{user}</SelectItem>
+                                    {USERS.map((user) => (
+                                        <SelectItem key={user} value={user}>{user}</SelectItem>
                                     ))}
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
 
                         <p className="font-bold text-orange-300">Tags</p>
-                        <Select value={tags} onValueChange={setTags}>
+                        <Select multiple value={tags} onValueChange={setTags}>
                             <SelectTrigger className="bg-neutral-800 text-neutral-300 text-xs h-6 px-2 rounded-md">
                                 <SelectValue placeholder="Tags" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem key={-1} value={-1}>None</SelectItem>
-                                    {TAGS.map((tag, index) => (
-                                        <SelectItem key={index} value={index}>{tag}</SelectItem>
+                                    {TAGS.map((tag) => (
+                                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
                                     ))}
                                 </SelectGroup>
                             </SelectContent>
@@ -128,17 +156,15 @@ export default function TaskModal({ task, setTask, isOpen, setIsOpen }: TaskModa
     );
 }
 
-interface Task {
-    title: string;
-    description: string;
-    priority: number;
-    tags: number;
-    assignee: number;
-    dueDate: Date;
+interface Note {
+    // Define your Note structure here
 }
+
 interface TaskModalProps {
-    task: Task;
-    setTask: (task: Task) => void;
+    task: Todo;
+    fetchData: () => Promise<void>;
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+    notes?: Note[];
+    setNotes: (notes: Note[] | ((notes: Note[]) => void)) => void;
 }
