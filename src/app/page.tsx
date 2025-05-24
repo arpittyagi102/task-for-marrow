@@ -143,6 +143,7 @@ export default function Home() {
                             <p>Loading...</p>
                         ) : (
                             todos.map(todo => (
+                                // @ts-ignore
                                 <Task key={todo._id?.toString()} todo={todo} fetchData={fetchData} editTask={editTask} setTodos={setTodos} />
                             ))
                         )}

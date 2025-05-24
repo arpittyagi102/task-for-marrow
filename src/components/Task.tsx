@@ -22,9 +22,9 @@ export default function Task({ todo, fetchData, editTask, setTodos }: TaskProps)
     }
 
     async function updateStatus() {
-        setTodos(prevTodos =>
-            prevTodos.map(t => 
-                t._id === todo._id ? {...t, completed: !t.completed} : t
+        setTodos((prevTodos: Todo[]) =>
+            prevTodos.map(t =>
+                t._id === todo._id ? { ...t, completed: !t.completed } : t
             )
         )
 
@@ -73,6 +73,6 @@ export default function Task({ todo, fetchData, editTask, setTodos }: TaskProps)
 interface TaskProps {
     todo: Todo;
     fetchData: () => Promise<void>;
-    setTodos: Dispatch<SetStateAction<Todo[]>>;
+    setTodos: (todos: Todo[] | ((todos: Todo[]) => void)) => void;
     editTask: (todo: Todo) => void;
 }

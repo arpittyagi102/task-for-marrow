@@ -33,6 +33,7 @@ export async function POST(
     const result = await todosCollection.updateOne(
       { _id: new ObjectId(params.id) },
       {
+        // @ts-ignore
         $push: { notes: newNote },
         $set: { updatedAt: new Date() },
       }

@@ -26,9 +26,8 @@ export default function Sidebar() {
         const tags = searchParams.get('tags');
         const assignedUsers = searchParams.get('assignedUsers');
 
-        if (priority) setPriority(priority.split(','));
+        if (priority) setPriority(priority);
         if (tags) setActiveTags(tags.split(','));
-        if (assignedUsers) setActiveAssignees(assignedUsers.split(','));
     }, []);
 
     return (
