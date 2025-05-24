@@ -39,7 +39,8 @@ export interface FilterParams {
   priority?: Todo["priority"];
   completed?: boolean;
   tags?: string[];
-  assignedUsers?: string[];
+  user?: string;
+  search?: string;
 }
 
 export interface TodoQueryParams extends PaginationParams, FilterParams {}

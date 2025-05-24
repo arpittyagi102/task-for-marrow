@@ -15,26 +15,27 @@ export async function GET(request: NextRequest) {
     const todosCollection = await getDatabase("todos");
     const params = parseQueryParams(request.nextUrl.searchParams);
 
-    // Build filter
     const filter: any = {};
     if (params.priority) filter.priority = params.priority;
     if (params.completed !== undefined) filter.completed = params.completed;
     if (params.tags?.length) filter.tags = { $in: params.tags };
-    if (params.assignedUsers?.length)
-      filter.assignedUsers = { $in: params.assignedUsers };
+    if (params.user) filter.assignedUsers = params.user;
+    if (params.search) {
+      filter.$or = [
+        { title: { $regex: params.search, $options: "i" } },
+        { description: { $regex: params.search, $options: "i" } },
+      ];
+    }
 
-    // Build sort
     const sort: any = {};
     if (params.sortBy) {
       sort[params.sortBy] = params.sortOrder === "desc" ? -1 : 1;
     } else {
-      sort.createdAt = -1; // Default sort by creation date
+      sort.createdAt = -1;
     }
 
-    // Get total count
     const total = await todosCollection.countDocuments(filter);
 
-    // Apply pagination
     const page = params.page || 1;
     const limit = params.limit || 10;
     const skip = (page - 1) * limit;

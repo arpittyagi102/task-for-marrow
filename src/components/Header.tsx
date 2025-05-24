@@ -1,8 +1,18 @@
 import Image from "next/image";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select"
 import { USERS } from "@/constants";
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function Header({ user, setUser }: HeaderProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    function handleChangeUser(selectedUser: string) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('user', selectedUser);
+        router.push(`?${params.toString()}`);
+    }
+
     return (
         <header className="w-full px-10 py-4 bg-neutral-900 text-white flex items-center justify-between">
             <h1 className="text-2xl font-bold">To Do List</h1>
@@ -15,7 +25,7 @@ export default function Header({ user, setUser }: HeaderProps) {
                 </button>
 
                 {/* User Select */}
-                <Select onValueChange={user => setUser(user)} defaultValue="All Users">
+                <Select onValueChange={handleChangeUser} defaultValue="All Users">
                     <SelectTrigger className="w-[180px] focus:outline-none bg-neutral-800">
                         <SelectValue placeholder="All Users" />
                     </SelectTrigger>

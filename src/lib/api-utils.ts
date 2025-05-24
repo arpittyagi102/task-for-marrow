@@ -101,8 +101,11 @@ export function parseQueryParams(
   const tags = searchParams.get("tags");
   if (tags) params.tags = tags.split(",");
 
-  const assignedUsers = searchParams.get("assignedUsers");
-  if (assignedUsers) params.assignedUsers = assignedUsers.split(",");
+  const user = searchParams.get("user");
+  if (user && user != "All Users") params.user = user;
+
+  const search = searchParams.get("search");
+  if (search) params.search = search;
 
   return params;
 }
