@@ -3,7 +3,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 export default function Sidebar({priority, setPriority, activeTags, setActiveTags} : SidebarProps) {
 
     return (
-        <aside className="max-w-72 h-full text-sm m-5 p-5 px-8 bg-neutral-900 rounded-md text-neutral-300">
+        <aside className="w-72 h-full text-sm m-5 p-5 px-8 bg-neutral-900 rounded-md text-neutral-300">
             <div className="flex flex-col gap-2">
                 <h3 className="text-xl text-neutral-300 font-bold text-center">Filters</h3>
                 <hr className="border-neutral-500 mb-1"/>

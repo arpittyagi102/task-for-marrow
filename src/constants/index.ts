@@ -6,4 +6,20 @@ const USERS = [
     "Charlie Davis"
 ]
 
-export { USERS };
+const TAGS = [
+    'Design',
+    'Frontend',
+    'Backend',
+    'Database',
+    'Deployment',
+    'Testing',
+    'Debugging',
+]
+
+const PRIORITIES = [
+    'low',
+    'medium',
+    'high'
+]
+
+export { USERS, TAGS, PRIORITIES };
