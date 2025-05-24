@@ -73,6 +73,6 @@ export default function Task({ todo, fetchData, editTask, setTodos }: TaskProps)
 interface TaskProps {
     todo: Todo;
     fetchData: () => Promise<void>;
-    setTodos: (todos: Todo[] | ((todos: Todo[]) => void)) => void;
+    setTodos: Dispatch<SetStateAction<Todo[]>>;
     editTask: (todo: Todo) => void;
 }

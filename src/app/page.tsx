@@ -108,12 +108,7 @@ export default function Home() {
         <main className="flex min-h-screen flex-col items-center justify-between">
             <Header user={user} setUser={setUser} />
             <div className="flex-1 flex w-full p-4">
-                <Sidebar
-                    priority={priority}
-                    setPriority={setPriority}
-                    activeTags={activeTags}
-                    setActiveTags={setActiveTags}
-                />
+                <Sidebar />
                 <section className="flex-1 p-5">
                     <div className="flex items-center justify-between mb-5">
                         <button className="bg-orange-500 text-white px-4 py-1 rounded-md border-2 border-transparent hover:border-orange-600 hover:bg-transparent transition duration-200"
@@ -125,9 +120,10 @@ export default function Home() {
                             placeholder="Search For Tasks"
                             className="w-60 px-4 py-2 bg-neutral-800 focus:bg-transparent"
                             value={search}
-                            onKeyDown={(e) =>{
+                            onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
-                                    const newSearch = e.target.value;
+                                    // @ts-ignore
+                                    const newSearch = e.target?.value as string;
                                     setSearch(newSearch);
                                     const params = new URLSearchParams(searchParams.toString());
                                     if (newSearch) {
